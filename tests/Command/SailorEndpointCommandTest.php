@@ -17,12 +17,21 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use const JSON_THROW_ON_ERROR;
 
 class SailorEndpointCommandTest extends KernelTestCase
 {
     private SailorEndpointCommand $sailorEndpointCommand;
+
+    protected static function getContainer(): ContainerInterface
+    {
+        if (method_exists(KernelTestCase::class, 'getContainer')) {
+            return parent::getContainer();
+        }
+        return self::$kernel->getContainer();
+    }
 
     private function setupKernel(array $endpoints = []): void
     {
