@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mismatch\SpawniaSailorBundle\Tests;
 
 use Mismatch\SpawniaSailorBundle\MismatchSpawniaSailorBundle;
@@ -23,7 +25,7 @@ class Kernel extends BaseKernel
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function registerBundles(): iterable
     {
@@ -34,13 +36,12 @@ class Kernel extends BaseKernel
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function buildContainer(): ContainerBuilder
     {
         $container = parent::buildContainer();
-        $container->addCompilerPass(new class($this->endpoints) implements CompilerPassInterface{
-
+        $container->addCompilerPass(new class($this->endpoints) implements CompilerPassInterface {
             private array $endpoints;
 
             public function __construct(array $endpoints)
@@ -51,15 +52,15 @@ class Kernel extends BaseKernel
             public function process(ContainerBuilder $container)
             {
                 foreach ($container->getDefinitions() as $id => $definition) {
-                    if ($id === 'parameter_bag') {
+                    if ('parameter_bag' === $id) {
                         $definition->setPublic(true);
                     }
-                    if (stripos($id, 'Mismatch') !== false || stripos($id, 'sailor') !== false) {
+                    if (false !== stripos($id, 'Mismatch') || false !== stripos($id, 'sailor')) {
                         $definition->setPublic(true);
                     }
                 }
                 foreach ($container->getAliases() as $id => $definition) {
-                    if (stripos($id, 'Mismatch') !== false || stripos($id, 'sailor') !== false) {
+                    if (false !== stripos($id, 'Mismatch') || false !== stripos($id, 'sailor')) {
                         $definition->setPublic(true);
                     }
                 }
@@ -71,7 +72,7 @@ class Kernel extends BaseKernel
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
@@ -90,7 +91,7 @@ class Kernel extends BaseKernel
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getCacheDir(): string
     {
@@ -98,7 +99,7 @@ class Kernel extends BaseKernel
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getLogDir(): string
     {
@@ -106,11 +107,10 @@ class Kernel extends BaseKernel
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function loadRoutes(LoaderInterface $loader): RouteCollection
     {
         return new RouteCollection();
     }
-
 }

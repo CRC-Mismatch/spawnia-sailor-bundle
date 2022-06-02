@@ -15,7 +15,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-
 use function Symfony\Component\String\u;
 
 class MismatchSpawniaSailorExtension extends Extension

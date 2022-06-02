@@ -17,7 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SailorGenerateCommand extends SailorEndpointCommand
 {
-
     protected function getCommandName(): string
     {
         return 'sailor:codegen';

@@ -10,26 +10,22 @@ declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\Services;
 
-use Http\Message\UriFactory;
 use JsonException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use Psr\Http\Message\UriInterface;
 use Spawnia\Sailor\Client;
-use Spawnia\Sailor\Client\Psr18;
 use Spawnia\Sailor\Error\InvalidDataException;
 use Spawnia\Sailor\Response;
 use stdClass;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
-
 use function urlencode;
+use const JSON_THROW_ON_ERROR;
 
 class SailorPsr18Client implements Client
 {
@@ -40,11 +36,6 @@ class SailorPsr18Client implements Client
     private string $url = '';
     private bool $post = true;
 
-    /**
-     * @param ClientInterface|null $client
-     * @param RequestFactoryInterface|null $requestFactory
-     * @param StreamFactoryInterface|null $streamFactory
-     */
     public function __construct(?ClientInterface $client = null, ?RequestFactoryInterface $requestFactory = null, ?StreamFactoryInterface $streamFactory = null, ?UriFactoryInterface $uriFactory = null)
     {
         $this->client = $client ?? new Psr18Client(HttpClient::create(), new Psr17Factory(), $streamFactory);
@@ -54,7 +45,8 @@ class SailorPsr18Client implements Client
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
      * @throws ClientExceptionInterface|InvalidDataException|JsonException
      */
     public function request(string $query, stdClass $variables = null): Response
@@ -75,7 +67,7 @@ class SailorPsr18Client implements Client
 
         if ($this->post) {
             $body = ['query' => $query];
-            if (!is_null($variables)) {
+            if (null !== $variables) {
                 $body['variables'] = $variables;
             }
             $bodyStream = $this->streamFactory->createStream(json_encode($body, JSON_THROW_ON_ERROR));
@@ -87,48 +79,36 @@ class SailorPsr18Client implements Client
 
         $getQuery = urlencode(json_encode($query, JSON_THROW_ON_ERROR));
         $getVariables = '';
-        if (!is_null($variables)) {
+        if (null !== $variables) {
             $getVariables = '&variables='.urlencode(json_encode($variables, JSON_THROW_ON_ERROR));
         }
+
         return $request->withUri($this->uriFactory->createUri("{$this->url}?query={$getQuery}$getVariables"));
     }
 
-    /**
-     * @return string
-     */
     public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * @param string $url
-     * @return self
-     */
     public function setUrl(string $url): self
     {
         $new = clone $this;
         $new->url = $url;
+
         return $new;
     }
 
-    /**
-     * @return bool
-     */
     public function isPost(): bool
     {
         return $this->post;
     }
 
-    /**
-     * @param bool $post
-     * @return self
-     */
     public function setPost(bool $post): self
     {
         $new = clone $this;
         $new->post = $post;
+
         return $new;
     }
-
 }

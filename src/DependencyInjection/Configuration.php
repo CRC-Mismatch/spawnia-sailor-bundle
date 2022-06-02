@@ -16,7 +16,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -30,11 +30,11 @@ class Configuration implements ConfigurationInterface
         $rootNode->children()
             ->booleanNode('default_post')
                 ->defaultTrue()
-                ->info("Should the default Sailor client use POST?")
+                ->info('Should the default Sailor client use POST?')
                 ->end()
             ->scalarNode('default_url')
                 ->defaultValue('')
-                ->info("Sets a URL for the default Sailor client")
+                ->info('Sets a URL for the default Sailor client')
                 ->end()
             ->arrayNode('endpoints')
                 ->requiresAtLeastOneElement()

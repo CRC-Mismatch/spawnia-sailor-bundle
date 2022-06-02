@@ -11,9 +11,7 @@ declare(strict_types=1);
 namespace Mismatch\SpawniaSailorBundle\Command;
 
 use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\Dumper;
 use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\Printer;
 use Spawnia\Sailor\Client;
 use Spawnia\Sailor\EndpointConfig;
 use Symfony\Component\Console\Command\Command;
@@ -24,17 +22,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-
-use function Symfony\Component\String\u;
+use function array_key_exists;
 
 abstract class SailorEndpointCommand extends Command
 {
     protected ParameterBag $parameters;
     protected array $endpoints = [];
 
-    /**
-     * @param ParameterBag $parameters
-     */
     public function __construct(ParameterBag $parameters)
     {
         parent::__construct();
@@ -42,7 +36,7 @@ abstract class SailorEndpointCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     final protected function configure(): void
     {
@@ -56,7 +50,7 @@ abstract class SailorEndpointCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -64,12 +58,14 @@ abstract class SailorEndpointCommand extends Command
         $endpoints = $this->parameters->get('sailor.endpoints');
         if (empty($endpoints)) {
             $io->error('The application must have at least one endpoint configured in order to use Sailor');
+
             return Command::FAILURE;
         }
         $endpoints = array_column($endpoints, null, 'name');
         if (($endpoint = $input->getArgument('endpoint')) !== null) {
             if (!array_key_exists($endpoint, $endpoints)) {
                 $io->error("The endpoint '$endpoint' is not known to the current configuration");
+
                 return Command::FAILURE;
             }
             $this->endpoints[$endpoint] = $endpoints[$endpoint];
@@ -96,6 +92,7 @@ abstract class SailorEndpointCommand extends Command
         }
         $config = $this->generateConfigFile($tempConfig);
         $filesystem->dumpFile($tempConfig, $config);
+
         return $tempConfig;
     }
 
@@ -127,24 +124,27 @@ abstract class SailorEndpointCommand extends Command
                 ->setPublic()
                 ->setReturnType('string')
                 ->addBody('return ?;', [$options['schema_path']]);
-            $endpoints[$name] = (string)$configClass;
+            $endpoints[$name] = (string) $configClass;
         }
         $configArrStr = "[\n";
         foreach ($endpoints as $name => $code) {
             $configArrStr .= "  '$name' => new class() $code,\n";
         }
-        $configArrStr .= "];";
+        $configArrStr .= '];';
         $config = new PhpFile();
         $config
             ->setStrictTypes()
             ->addComment('This file is auto-generated.')
             ->addUse(EndpointConfig::class);
+
         return "$config\nreturn $configArrStr";
     }
 
     abstract protected function getCommandName(): string;
 
-    protected function postConfigure(): void {}
+    protected function postConfigure(): void
+    {
+    }
 
     abstract protected function postExecute(InputInterface $input, OutputInterface $output): int;
 }

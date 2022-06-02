@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Mismatch\SpawniaSailorBundle\Tests\Command;
 
 use Mismatch\SpawniaSailorBundle\Command\SailorEndpointCommand;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -19,13 +18,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use const JSON_THROW_ON_ERROR;
 
 class SailorEndpointCommandTest extends KernelTestCase
 {
-
-    /**
-     * @var SailorEndpointCommand
-     */
     private SailorEndpointCommand $sailorEndpointCommand;
 
     private function setupKernel(array $endpoints = []): void
@@ -33,15 +29,12 @@ class SailorEndpointCommandTest extends KernelTestCase
         $kernel = self::bootKernel([
             'environment' => 'test',
             'debug' => [
-                'suffix' => (string)microtime(),
+                'suffix' => (string) microtime(),
                 'endpoints' => $endpoints,
             ],
         ]);
         $application = new Application($kernel);
-        $this->sailorEndpointCommand = new class(
-            self::getContainer()->getParameterBag(),
-            $application
-        ) extends SailorEndpointCommand {
+        $this->sailorEndpointCommand = new class(self::getContainer()->getParameterBag(), $application) extends SailorEndpointCommand {
             public function __construct(ParameterBag $parameters, Application $application)
             {
                 parent::__construct($parameters);
@@ -60,6 +53,7 @@ class SailorEndpointCommandTest extends KernelTestCase
                     'endpoint' => $input->getArgument('endpoint'),
                     'config' => $input->getOption('config'),
                 ], JSON_THROW_ON_ERROR));
+
                 return Command::SUCCESS;
             }
         };
@@ -70,7 +64,7 @@ class SailorEndpointCommandTest extends KernelTestCase
         $this->setupKernel([]);
         $tester = new CommandTester($this->sailorEndpointCommand);
         $tester->execute([]);
-        self::assertEquals(Command::FAILURE, $tester->getStatusCode());
+        self::assertSame(Command::FAILURE, $tester->getStatusCode());
     }
 
     public function testExecute(): void
@@ -84,12 +78,11 @@ class SailorEndpointCommandTest extends KernelTestCase
                 'generation_path' => '%kernel.project_dir%/var/test/gen',
                 'operations_path' => '%kernel.project_dir%/var/test/ops',
                 'schema_path' => '%kernel.project_dir%/var/test/schema/schema.graphql',
-            ]
+            ],
         ]);
         $tester = new CommandTester($this->sailorEndpointCommand);
         $tester->execute([]);
         $tester->assertCommandIsSuccessful();
         $output = $tester->getDisplay();
-        return;
     }
 }
