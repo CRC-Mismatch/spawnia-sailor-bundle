@@ -15,6 +15,7 @@
 !bin/console
 !bin/symfony_requirements
 /vendor/
+/composer.lock
 
 # PHPUnit
 /phpunit.xml
@@ -25,3 +26,5 @@
 
 # Composer PHAR
 /composer.phar
+
+/.php-cs-fixer.cache
