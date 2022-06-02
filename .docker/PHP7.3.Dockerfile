@@ -56,6 +56,7 @@ RUN set -eux; \
     apt-get update && apt-get install symfony-cli;
 COPY config/php/php.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 COPY config/php/pcov.ini /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
+ARG PROJECT_PATH=/var/www/html
 ENV PROJECT_PATH=${PROJECT_PATH}
 WORKDIR $PROJECT_PATH
 USER app
