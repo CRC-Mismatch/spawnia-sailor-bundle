@@ -62,7 +62,6 @@ abstract class SailorEndpointCommand extends Command
 
             return Command::FAILURE;
         }
-        $endpoints = array_column($endpoints, null, 'name');
         if (($endpoint = $input->getArgument('endpoint')) !== null) {
             if (!array_key_exists($endpoint, $endpoints)) {
                 $io->error("The endpoint '$endpoint' is not known to the current configuration");

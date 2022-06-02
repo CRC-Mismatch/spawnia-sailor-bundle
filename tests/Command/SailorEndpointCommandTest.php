@@ -79,8 +79,7 @@ class SailorEndpointCommandTest extends KernelTestCase
     public function testExecute(): void
     {
         $this->setupKernel([
-            [
-                'name' => 'test_endpoint',
+            'test_endpoint' => [
                 'url' => 'test',
                 'post' => false,
                 'namespace' => 'Test\\App',

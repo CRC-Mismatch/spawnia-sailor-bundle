@@ -30,8 +30,8 @@ class MismatchSpawniaSailorExtension extends Extension
         $container->setParameter('sailor.endpoints', $config['endpoints']);
         $container->setParameter('sailor.default_url', $config['default_url']);
         $container->setParameter('sailor.default_post', $config['default_post']);
-        foreach ($config['endpoints'] as $endpoint) {
-            $uname = u($endpoint['name']);
+        foreach ($config['endpoints'] as $name => $endpoint) {
+            $uname = u($name);
             $camelName = $uname->camel();
             $snakeName = $uname->snake();
             $id = SailorPsr18Client::class." $${camelName}Client";
