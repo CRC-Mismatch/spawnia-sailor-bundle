@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\Tests;
 
-use Mismatch\SpawniaSailorBundle\Services\SailorPsr18Client;
+use Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client;
 use PHPUnit\Framework\TestCase;
 use Spawnia\Sailor\Client;
 use function is_int;

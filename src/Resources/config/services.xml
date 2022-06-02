@@ -6,8 +6,8 @@
     <services>
         <defaults autoconfigure="true" autowire="true" public="false"/>
         <service id="sailor.client" alias="Spawnia\Sailor\Client" public="true"/>
-        <service id="Spawnia\Sailor\Client" alias="Mismatch\SpawniaSailorBundle\Services\SailorPsr18Client"/>
-        <service id="Mismatch\SpawniaSailorBundle\Services\SailorPsr18Client">
+        <service id="Spawnia\Sailor\Client" alias="Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client"/>
+        <service id="Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client">
             <call method="setUrl" returns-clone="true">
                 <argument>%sailor.default_url%</argument>
             </call>

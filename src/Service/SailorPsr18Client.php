@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Mismatch\SpawniaSailorBundle\Services;
+namespace Mismatch\SpawniaSailorBundle\Service;
 
 use JsonException;
 use Nyholm\Psr7\Factory\Psr17Factory;

@@ -10,7 +10,8 @@ declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\DependencyInjection;
 
-use Mismatch\SpawniaSailorBundle\Services\SailorPsr18Client;
+use Exception;
+use Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -19,6 +20,9 @@ use function Symfony\Component\String\u;
 
 class MismatchSpawniaSailorExtension extends Extension
 {
+    /**
+     * @throws Exception
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();

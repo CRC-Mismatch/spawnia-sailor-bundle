@@ -15,11 +15,11 @@ use Nette\PhpGenerator\PhpFile;
 use Spawnia\Sailor\Client;
 use Spawnia\Sailor\EndpointConfig;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -73,10 +73,13 @@ abstract class SailorEndpointCommand extends Command
             $this->endpoints = $endpoints;
         }
 
-        $this->addOption('config');
-        $input->setOption('config', $this->treatEndpoints());
+        $argsOpts = [
+            '--config' => $this->treatEndpoints(),
+        ];
+        $endpoint && $argsOpts['endpoint'] = $input->getArgument('endpoint');
+        $arrayInput = new ArrayInput($argsOpts);
 
-        return $this->postExecute($input, $output);
+        return $this->postExecute($arrayInput, $output);
     }
 
     private function treatEndpoints(): string
