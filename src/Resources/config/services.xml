@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults autoconfigure="true" autowire="true" public="false"/>
+        <service id="sailor.client" alias="Spawnia\Sailor\Client" public="true"/>
+        <service id="Spawnia\Sailor\Client" alias="Mismatch\SpawniaSailorBundle\Services\SailorPsr18Client"/>
+        <service id="Mismatch\SpawniaSailorBundle\Services\SailorPsr18Client">
+            <call method="setUrl" returns-clone="true">
+                <argument>%sailor.default_url%</argument>
+            </call>
+            <call method="setPost" returns-clone="true">
+                <argument>%sailor.default_post%</argument>
+            </call>
+        </service>
+    </services>
+</container>

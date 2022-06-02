@@ -1,0 +1,116 @@
+version: '3.5'
+services:
+  php-cli-8.1:
+    build:
+      context: .
+      dockerfile: PHP8.1.Dockerfile
+      args:
+        - USERID=${USERID}
+        - GROUPID=${GROUPID}
+    volumes:
+      - ../:/var/www/html
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+      - ~/.config/composer:/home/app/.composer
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+      - PHP_MAX_EXECUTION_TIME=$PHP_CLI_MAX_EXECUTION_TIME
+      - PHP_MEMORY_LIMIT=$PHP_CLI_MEMORY_LIMIT
+      - PHP_POST_MAX_SIZE=$PHP_CLI_POST_MAX_SIZE
+      - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  php-cli-8.0:
+    build:
+      context: .
+      dockerfile: PHP8.0.Dockerfile
+      args:
+        - USERID=${USERID}
+        - GROUPID=${GROUPID}
+    volumes:
+      - ../:/var/www/html
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+      - ~/.config/composer:/home/app/.composer
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+      - PHP_MAX_EXECUTION_TIME=$PHP_CLI_MAX_EXECUTION_TIME
+      - PHP_MEMORY_LIMIT=$PHP_CLI_MEMORY_LIMIT
+      - PHP_POST_MAX_SIZE=$PHP_CLI_POST_MAX_SIZE
+      - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  php-cli-7.4:
+    build:
+      context: .
+      dockerfile: PHP7.4.Dockerfile
+      args:
+        - USERID=${USERID}
+        - GROUPID=${GROUPID}
+    volumes:
+      - ../:/var/www/html
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+      - ~/.config/composer:/home/app/.composer
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+      - PHP_MAX_EXECUTION_TIME=$PHP_CLI_MAX_EXECUTION_TIME
+      - PHP_MEMORY_LIMIT=$PHP_CLI_MEMORY_LIMIT
+      - PHP_POST_MAX_SIZE=$PHP_CLI_POST_MAX_SIZE
+      - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  php-cli-7.3:
+    build:
+      context: .
+      dockerfile: PHP7.3.Dockerfile
+      args:
+        - USERID=${USERID}
+        - GROUPID=${GROUPID}
+    volumes:
+      - ../:/var/www/html
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+      - ~/.config/composer:/home/app/.composer
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+      - PHP_MAX_EXECUTION_TIME=$PHP_CLI_MAX_EXECUTION_TIME
+      - PHP_MEMORY_LIMIT=$PHP_CLI_MEMORY_LIMIT
+      - PHP_POST_MAX_SIZE=$PHP_CLI_POST_MAX_SIZE
+      - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  php-cli-7.2:
+    build:
+      context: .
+      dockerfile: PHP7.2.Dockerfile
+      args:
+        - USERID=${USERID}
+        - GROUPID=${GROUPID}
+    volumes:
+      - ../:/var/www/html
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+      - ~/.config/composer:/home/app/.composer
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+      - PHP_MAX_EXECUTION_TIME=$PHP_CLI_MAX_EXECUTION_TIME
+      - PHP_MEMORY_LIMIT=$PHP_CLI_MEMORY_LIMIT
+      - PHP_POST_MAX_SIZE=$PHP_CLI_POST_MAX_SIZE
+      - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  php-cli-7.1:
+    build:
+      context: .
+      dockerfile: PHP7.1.Dockerfile
+      args:
+        - USERID=${USERID}
+        - GROUPID=${GROUPID}
+    volumes:
+      - ../:/var/www/html
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+      - ~/.config/composer:/home/app/.composer
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+      - PHP_MAX_EXECUTION_TIME=$PHP_CLI_MAX_EXECUTION_TIME
+      - PHP_MEMORY_LIMIT=$PHP_CLI_MEMORY_LIMIT
+      - PHP_POST_MAX_SIZE=$PHP_CLI_POST_MAX_SIZE
+      - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

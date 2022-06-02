@@ -1,0 +1,70 @@
+#!/bin/bash
+
+init() {
+    self=$(which $0)
+    declare -A available_php_versions
+    available_php_versions=(["8"]="8.0" ["8.0"]="8.0" ["8.1"]="8.1" ["7"]="7.4" ["7.1"]="7.1" ["7.2"]="7.2" ["7.3"]="7.3" ["7.4"]="7.4")
+    self_path=$(dirname $(realpath $self))
+    project_path=$(dirname $self_path)
+    compose_file_custom="${project_path}/docker-compose.yml"
+    compose_file_dist="${project_path}/.docker/docker-compose.yml"
+    env_file="--env-file ${project_path}/.docker/.env"
+
+    if [ -f "${compose_file_custom}" ]; then
+        compose_file="-f $compose_file_dist -f $compose_file_custom "
+    else
+        compose_file="-f $compose_file_dist"
+    fi
+
+    if [ -n "$2" -a -n ${available_php_versions["$1"]} ]; then
+      php_version="${available_php_versions["$1"]}"
+      set -- "${@:2}"
+    else
+      php_version="8.1"
+    fi
+    "$@"
+
+}
+
+exec() {
+    docker-compose $compose_file $env_file exec "$@"
+}
+
+rebuild() {
+    update
+    build
+}
+
+update() {
+    :
+}
+
+build() {
+    docker-compose $compose_file $env_file build
+}
+
+console() {
+    docker-compose $compose_file $env_file run --rm --entrypoint /bin/bash php-cli-${php_version}
+}
+
+logs() {
+    docker-compose $compose_file $env_file logs "$@"
+}
+
+php() {
+    docker-compose $compose_file $env_file run -T --rm php-cli-${php_version} "$@"
+}
+
+php-debug() {
+    PHP_IDE_CONFIG="serverName=sailor.localhost" php -dxdebug.mode=debug -dxdebug.idekey=PHPSTORM -dxdebug.client_host=host.docker.internal "$@"
+}
+
+symfony() {
+    php bin/console "$@"
+}
+
+composer() {
+    php composer "$@"
+}
+
+init "$@"

@@ -1,0 +1,27 @@
+# Cache, session files and logs (Symfony3)
+/var/cache/*
+/var/logs/*
+!var/cache/.gitkeep
+!var/logs/.gitkeep
+
+# Logs (Symfony4)
+/var/log/*
+!var/log/.gitkeep
+
+# Managed by Composer
+/var/bootstrap.php.cache
+/bin/*
+!bin/dev
+!bin/console
+!bin/symfony_requirements
+/vendor/
+
+# PHPUnit
+/phpunit.xml
+/.phpunit.result.cache
+
+# Build data
+/build/
+
+# Composer PHAR
+/composer.phar

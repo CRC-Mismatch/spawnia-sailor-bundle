@@ -1,0 +1,54 @@
+{
+    "name": "mismatch/sailor-bundle",
+    "type": "symfony-bundle",
+    "description": "Integrate Sailor into Symfony",
+    "keywords": ["graphql", "sailor", "client"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Mian Kraiker",
+            "email": "kevin.mian@gmail.com",
+            "homepage": "https://github.com/CRC-Mismatch"
+        }
+    ],
+    "require": {
+        "php": "^7.4 | ^8.0",
+        "ext-json": "*",
+        "symfony/config": "^4.0|^5.0|^6.0",
+        "symfony/console": "^4.0|^5.0|^6.0",
+        "symfony/dependency-injection": "^4.0|^5.0|^6.0",
+        "symfony/event-dispatcher": "^4.0|^5.0|^6.0",
+        "symfony/http-kernel": "^4.0|^5.0|^6.0",
+        "spawnia/sailor": "^0.21",
+        "psr/http-client": "^1.0",
+        "symfony/cache-contracts": "^2.2|^3.0",
+        "symfony/filesystem": "^4.0|^5.0|^6.0",
+        "nette/php-generator": "^3.6|^4.0"
+    },
+    "require-dev": {
+        "matthiasnoback/symfony-dependency-injection-test": "^3.1|^4.0",
+        "symfony/framework-bundle": "^4.0|^5.0|^6.0",
+        "symfony/phpunit-bridge": "^5.3",
+        "symfony/debug": ">=4.4.41",
+        "phpunit/phpunit": "^8.5 | ^9.5",
+        "nyholm/psr7": "^1.5",
+        "symfony/http-client": "^4.0|^5.0|^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mismatch\\SpawniaSailorBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mismatch\\SpawniaSailorBundle\\Tests\\": "tests/"
+        }
+    },
+    "conflict": {
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "develop"
+        }
+    }
+}
