@@ -41,8 +41,6 @@ jobs:
 
           # symfony version
           - php: 8.1
-            symfony: '^4.0'
-          - php: 8.1
             symfony: '^5.0'
           - php: 8.1
             symfony: '^6.0'

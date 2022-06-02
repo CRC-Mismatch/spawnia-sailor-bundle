@@ -83,6 +83,7 @@ class Kernel extends BaseKernel
                 'router' => [
                     'resource' => 'kernel:loadRoutes',
                     'type' => 'service',
+                    'utf8' => true,
                 ],
                 'http_method_override' => false,
             ]);
