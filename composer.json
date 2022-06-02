@@ -30,7 +30,6 @@
         "symfony/framework-bundle": "^5.0|^6.0",
         "symfony/phpunit-bridge": "^5.3",
         "symfony/debug": ">=4.4.41",
-        "phpunit/phpunit": "^9.5",
         "nyholm/psr7": "^1.5",
         "symfony/http-client": "^5.0|^6.0",
         "friendsofphp/php-cs-fixer": "^3.8"
