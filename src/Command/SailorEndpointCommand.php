@@ -20,16 +20,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use function array_key_exists;
 
 abstract class SailorEndpointCommand extends Command
 {
-    protected ParameterBag $parameters;
+    protected ParameterBagInterface $parameters;
     protected array $endpoints = [];
 
-    public function __construct(ParameterBag $parameters)
+    public function __construct(ParameterBagInterface $parameters)
     {
         parent::__construct();
         $this->parameters = $parameters;
