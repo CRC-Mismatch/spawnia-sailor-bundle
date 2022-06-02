@@ -22,6 +22,11 @@ class SailorGenerateCommand extends SailorEndpointCommand
         return 'sailor:codegen';
     }
 
+    protected function postConfigure(): void
+    {
+        $this->setDescription('Generate code from your GraphQL files.');
+    }
+
     /**
      * @throws Exception
      */

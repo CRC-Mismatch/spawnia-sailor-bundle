@@ -20,11 +20,11 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('sailor');
+        $treeBuilder = new TreeBuilder('mismatch_spawnia_sailor');
         if (method_exists(TreeBuilder::class, 'getRootNode')) {
             $rootNode = $treeBuilder->getRootNode();
         } else {
-            $rootNode = $treeBuilder->root('sailor');
+            $rootNode = $treeBuilder->root('mismatch_spawnia_sailor');
         }
 
         $rootNode->children()

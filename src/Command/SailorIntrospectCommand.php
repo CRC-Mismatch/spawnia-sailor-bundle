@@ -22,6 +22,11 @@ class SailorIntrospectCommand extends SailorEndpointCommand
         return 'sailor:introspect';
     }
 
+    protected function postConfigure(): void
+    {
+        $this->setDescription('Download a remote schema through introspection.');
+    }
+
     /**
      * @throws Exception
      */
