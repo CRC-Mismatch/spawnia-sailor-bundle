@@ -10,10 +10,6 @@ declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\Command;
 
-use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\PhpFile;
-use Spawnia\Sailor\Client;
-use Spawnia\Sailor\EndpointConfig;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -57,90 +53,52 @@ abstract class SailorEndpointCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $endpoints = $this->parameters->get('sailor.endpoints');
-        if (empty($endpoints)) {
-            $io->error('The application must have at least one endpoint configured in order to use Sailor');
+        $config = $this->parameters->get('sailor.config');
+        $configPath = $this->parameters->get('sailor.config_path');
+        if (empty($configPath)) {
+            $io->error('The application requires a Sailor config_path to be set before using Sailor commands.');
+        }
+        if (empty($config) || empty($endpoints)) {
+            $io->error('The application must have at least one endpoint configured in order to use Sailor.');
+            $io->comment("It's possible that you just need to run cache:clear and try again");
 
             return Command::FAILURE;
         }
-        if (($endpoint = $input->getArgument('endpoint')) !== null) {
-            if (!array_key_exists($endpoint, $endpoints)) {
-                $io->error("The endpoint '$endpoint' is not known to the current configuration");
+        if ((($endpoint = $input->getArgument('endpoint')) !== null) && !array_key_exists($endpoint, $endpoints)) {
+            $io->error("The endpoint '$endpoint' is not known to the current configuration");
 
-                return Command::FAILURE;
-            }
-            $this->endpoints[$endpoint] = $endpoints[$endpoint];
-        } else {
-            $this->endpoints = $endpoints;
+            return Command::FAILURE;
         }
+
+        $endpoints = !empty($endpoint) ? [$endpoint => $endpoints[$endpoint]] : $endpoints;
+
+        $this->generateConfigFile(
+            $configPath,
+            $config,
+            $endpoints,
+        );
 
         $argsOpts = [
-            '--config' => $this->treatEndpoints(),
+            '--config' => $configPath,
         ];
-        $endpoint && $argsOpts['endpoint'] = $input->getArgument('endpoint');
+        !empty($endpoint) && $argsOpts['endpoint'] = $endpoint;
         $arrayInput = new ArrayInput($argsOpts);
 
-        return $this->postExecute($arrayInput, $output);
+        return $this->postExecute($configPath, $config, $endpoints, $arrayInput, $output);
     }
 
-    private function treatEndpoints(): string
+    protected function generateConfigFile(string $configPath, string $config, array $endpoints): void
     {
         $filesystem = new Filesystem();
-        $tempConfig = $filesystem->tempnam('/tmp', 'slr', '.php');
-        foreach ($this->endpoints as $name => $endpoint) {
+        $filesystem->mkdir(Path::canonicalize("$configPath/.."), 0775);
+        foreach ($endpoints as $endpoint) {
             $filesystem->mkdir([
-                Path::makeAbsolute($endpoint['operations_path'], $this->parameters->get('kernel.project_dir')),
-                Path::makeAbsolute($endpoint['generation_path'], $this->parameters->get('kernel.project_dir')),
-                Path::makeAbsolute(Path::canonicalize($endpoint['schema_path'].'/..'), $this->parameters->get('kernel.project_dir')),
+                $endpoint['operations_path'],
+                $endpoint['generation_path'],
+                Path::canonicalize("{$endpoint['schema_path']}/.."),
             ], 0775);
         }
-        $config = $this->generateConfigFile($tempConfig);
-        $filesystem->dumpFile($tempConfig, $config);
-
-        return $tempConfig;
-    }
-
-    private function generateConfigFile(string $path): string
-    {
-        $endpoints = [];
-        foreach ($this->endpoints as $name => $options) {
-            $configClass = (new ClassType())
-                ->setExtends(EndpointConfig::class);
-            $configClass->addMethod('makeClient')
-                ->setPublic()
-                ->setReturnType(Client::class)
-                ->addBody('return (new \\Mismatch\\SpawniaSailorBundle\\Service\\SailorPsr18Client())')
-                ->addBody('->setUrl(?)', [$options['url']])
-                ->addBody('->setPost(?);', [$options['post']]);
-            $configClass->addMethod('namespace')
-                ->setPublic()
-                ->setReturnType('string')
-                ->addBody('return ?;', [$options['namespace']]);
-            $configClass->addMethod('targetPath')
-                ->setPublic()
-                ->setReturnType('string')
-                ->addBody('return ?;', [$options['generation_path']]);
-            $configClass->addMethod('searchPath')
-                ->setPublic()
-                ->setReturnType('string')
-                ->addBody('return ?;', [$options['operations_path']]);
-            $configClass->addMethod('schemaPath')
-                ->setPublic()
-                ->setReturnType('string')
-                ->addBody('return ?;', [$options['schema_path']]);
-            $endpoints[$name] = (string) $configClass;
-        }
-        $configArrStr = "[\n";
-        foreach ($endpoints as $name => $code) {
-            $configArrStr .= "  '$name' => new class() $code,\n";
-        }
-        $configArrStr .= '];';
-        $config = new PhpFile();
-        $config
-            ->setStrictTypes()
-            ->addComment('This file is auto-generated.')
-            ->addUse(EndpointConfig::class);
-
-        return "$config\nreturn $configArrStr";
+        $filesystem->dumpFile($configPath, $config);
     }
 
     abstract protected function getCommandName(): string;
@@ -149,5 +107,5 @@ abstract class SailorEndpointCommand extends Command
     {
     }
 
-    abstract protected function postExecute(InputInterface $input, OutputInterface $output): int;
+    abstract protected function postExecute(string $configPath, string $config, array $endpoints, InputInterface $input, OutputInterface $output): int;
 }

@@ -8,10 +8,9 @@
 
 declare(strict_types=1);
 
-namespace Mismatch\SpawniaSailorBundle\Tests\Command;
+namespace Mismatch\SpawniaSailorBundle\Tests\Functional\Command;
 
 use Mismatch\SpawniaSailorBundle\Command\SailorEndpointCommand;
-use Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client;
 use Spawnia\Sailor\EndpointConfig;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -24,8 +23,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use function is_array;
+use function array_map;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 
@@ -42,13 +42,14 @@ class SailorEndpointCommandTest extends KernelTestCase
         return self::$kernel->getContainer();
     }
 
-    private function setupKernel(array $endpoints = []): void
+    private function setupKernel(?string $configPath = null, ?array $endpoints = null): void
     {
         $kernel = self::bootKernel([
             'environment' => 'test',
             'debug' => [
                 'suffix' => (string) microtime(),
                 'endpoints' => $endpoints,
+                'config_path' => $configPath,
             ],
         ]);
         $application = new Application($kernel);
@@ -64,14 +65,14 @@ class SailorEndpointCommandTest extends KernelTestCase
                 return 'testCommand';
             }
 
-            protected function postExecute(InputInterface $input, OutputInterface $output): int
+            protected function postExecute(string $configPath, string $config, array $endpoints, InputInterface $input, OutputInterface $output): int
             {
                 $input->bind(new InputDefinition([
                     new InputArgument('endpoint', InputArgument::OPTIONAL),
                     new InputOption('config', 'c', InputOption::VALUE_OPTIONAL),
                 ]));
                 $output->write(json_encode([
-                    'endpoints' => $this->endpoints,
+                    'endpoints' => $endpoints,
                     'endpoint' => $input->getArgument('endpoint'),
                     'config' => $input->getOption('config'),
                 ], JSON_THROW_ON_ERROR));
@@ -79,29 +80,75 @@ class SailorEndpointCommandTest extends KernelTestCase
                 return Command::SUCCESS;
             }
         };
+        $filesystem = new Filesystem();
+        if (!empty($configPath)) {
+            $configPath = Path::makeAbsolute($configPath, self::getContainer()->getParameter('kernel.project_dir'));
+            $filesystem->remove($configPath);
+            if (null !== $endpoints) {
+                foreach ($endpoints as $endpoint) {
+                    if (empty($endpoint)) {
+                        continue;
+                    }
+                    $filesystem->remove([
+                        Path::makeAbsolute($endpoint['generation_path'], $configPath),
+                        Path::makeAbsolute($endpoint['operations_path'], $configPath),
+                        Path::makeAbsolute($endpoint['schema_path'], $configPath),
+                        Path::makeAbsolute("{$endpoint['schema_path']}/..", $configPath),
+                    ]);
+                }
+            }
+        }
     }
 
-    public function testFailWithoutEndpoints(): void
+    public function testFailWithoutConfigPath(): void
     {
-        $this->setupKernel([]);
+        $this->setupKernel('');
         $tester = new CommandTester($this->sailorEndpointCommand);
         $tester->execute([]);
         self::assertSame(Command::FAILURE, $tester->getStatusCode());
     }
 
-    public function testExecuteSingleNoArg(): void
+    public function testFailWithoutEndpoints(): void
     {
+        $this->setupKernel();
+        $tester = new CommandTester($this->sailorEndpointCommand);
+        $tester->execute([]);
+        self::assertSame(Command::FAILURE, $tester->getStatusCode());
+    }
+
+    public function testFailMissingEndpoint(): void
+    {
+        $configPath = 'var/test/sailor.php';
         $endpoints = [
             'test_endpoint' => [
                 'url' => 'test',
                 'post' => false,
                 'namespace' => 'Test\\App',
                 'generation_path' => '%kernel.project_dir%/var/test/gen',
-                'operations_path' => '%kernel.project_dir%/var/test/ops',
-                'schema_path' => '%kernel.project_dir%/var/test/schema/schema.graphql',
+                'operations_path' => 'var/test/ops',
+                'schema_path' => 'schema/schema.graphql',
             ],
         ];
-        $this->setupKernel($endpoints);
+        $this->setupKernel($configPath, $endpoints);
+        $tester = new CommandTester($this->sailorEndpointCommand);
+        $tester->execute(['endpoint' => 'non-existent']);
+        self::assertSame(Command::FAILURE, $tester->getStatusCode());
+    }
+
+    public function testExecuteSingleNoArg(): void
+    {
+        $configPath = 'var/test/sailor.php';
+        $endpoints = [
+            'test_endpoint' => [
+                'url' => 'test',
+                'post' => false,
+                'namespace' => 'Test\\App',
+                'generation_path' => '%kernel.project_dir%/var/test/gen',
+                'operations_path' => 'var/test/ops',
+                'schema_path' => 'schema/schema.graphql',
+            ],
+        ];
+        $this->setupKernel($configPath, $endpoints);
         $tester = new CommandTester($this->sailorEndpointCommand);
         $tester->execute([]);
         $this->assertExecution($tester, $endpoints);
@@ -109,6 +156,7 @@ class SailorEndpointCommandTest extends KernelTestCase
 
     public function testExecuteSingleWithArg(): void
     {
+        $configPath = 'var/test/sailor.php';
         $endpointName = 'test_endpoint';
         $endpoints = [
             $endpointName => [
@@ -120,7 +168,7 @@ class SailorEndpointCommandTest extends KernelTestCase
                 'schema_path' => '%kernel.project_dir%/var/test/schema/schema.graphql',
             ],
         ];
-        $this->setupKernel($endpoints);
+        $this->setupKernel($configPath, $endpoints);
         $tester = new CommandTester($this->sailorEndpointCommand);
         $tester->execute(['endpoint' => $endpointName]);
         $this->assertExecution($tester, $endpoints, $endpointName);
@@ -128,6 +176,7 @@ class SailorEndpointCommandTest extends KernelTestCase
 
     public function testExecuteMultipleNoArg(): void
     {
+        $configPath = 'var/test/sailor.php';
         $endpointName = 'test_endpoint';
         $endpoints = [
             $endpointName => [
@@ -155,7 +204,7 @@ class SailorEndpointCommandTest extends KernelTestCase
                 'schema_path' => 'var/test/schema/schema.graphql',
             ],
         ];
-        $this->setupKernel($endpoints);
+        $this->setupKernel($configPath, $endpoints);
         $tester = new CommandTester($this->sailorEndpointCommand);
         $tester->execute([]);
         $this->assertExecution($tester, $endpoints);
@@ -163,6 +212,7 @@ class SailorEndpointCommandTest extends KernelTestCase
 
     public function testExecuteMultipleWithArg(): void
     {
+        $configPath = 'var/test/sailor.php';
         $endpointName = 'test_endpoint';
         $endpoints = [
             $endpointName => [
@@ -193,24 +243,14 @@ class SailorEndpointCommandTest extends KernelTestCase
         $chosenEndpoint = [
             $endpointName => $endpoints[$endpointName],
         ];
-        $this->setupKernel($endpoints);
+        $this->setupKernel($configPath, $endpoints);
         $tester = new CommandTester($this->sailorEndpointCommand);
         $tester->execute(['endpoint' => $endpointName]);
         $this->assertExecution($tester, $chosenEndpoint, $endpointName);
     }
 
-    protected function assertExecution(CommandTester $tester, array $endpoints, ?string $endpoint = null): void
+    protected function assertExecution(CommandTester $tester, ?array $endpoints = null, ?string $endpoint = null): void
     {
-        $endpoints = array_map(static function ($v) {
-            foreach ($v as $k => $o) {
-                if (!is_string($o)) {
-                    continue;
-                }
-                $v[$k] = str_replace('%kernel.project_dir%', self::getContainer()->getParameter('kernel.project_dir'), $o);
-            }
-
-            return $v;
-        }, $endpoints);
         $tester->assertCommandIsSuccessful();
         $output = $tester->getDisplay();
         $this->assertJson($output);
@@ -219,6 +259,18 @@ class SailorEndpointCommandTest extends KernelTestCase
         $this->assertIsString($outputData['config']);
         $config = $outputData['config'];
         unset($outputData['config']);
+        $projectDir = self::getContainer()->getParameter('kernel.project_dir');
+        foreach ($endpoints as &$ep) {
+            $ep = array_map(static function ($v) use ($projectDir) {
+                if (is_string($v) && str_contains($v, '/')) {
+                    $v = str_replace('%kernel.project_dir%/', '', $v);
+                    $v = Path::makeAbsolute($v, $projectDir);
+                }
+
+                return $v;
+            }, $ep);
+        }
+        unset($ep);
         $this->assertSame(
             [
                 'endpoints' => $endpoints,
@@ -226,30 +278,16 @@ class SailorEndpointCommandTest extends KernelTestCase
             ],
             $outputData
         );
-        $configData = require Path::makeRelative($config, __DIR__);
-        $this->testGeneratedConfig($configData, $endpoints);
-    }
-
-    private function testGeneratedConfig($configData, $endpoints): void
-    {
-        if (
-            !is_array($configData)
-            || empty($configData)
-            || !array_reduce(
-                $configData,
-                static fn ($r, $o) => $r && $o instanceof EndpointConfig,
-                true
-            )
-        ) {
-            self::fail('Config file invalid');
-        }
-        foreach ($configData as $name => $endpoint) {
-            /* @var $endpoint EndpointConfig */
-            $this->assertInstanceOf(SailorPsr18Client::class, $endpoint->makeClient());
-            $this->assertSame($endpoints[$name]['namespace'], $endpoint->namespace());
-            $this->assertSame($endpoints[$name]['generation_path'], $endpoint->targetPath());
-            $this->assertSame($endpoints[$name]['operations_path'], $endpoint->searchPath());
-            $this->assertSame($endpoints[$name]['schema_path'], $endpoint->schemaPath());
+        $filesystem = new Filesystem();
+        $this->assertTrue($filesystem->exists($config));
+        $configData = require $config;
+        /** @var EndpointConfig $configDatum */
+        foreach ($configData as $configDatum) {
+            $this->assertTrue($filesystem->exists([
+                $configDatum->targetPath(),
+                $configDatum->searchPath(),
+                Path::canonicalize($configDatum->schemaPath().'/..'),
+            ]));
         }
     }
 }

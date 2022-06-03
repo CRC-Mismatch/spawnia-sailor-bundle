@@ -30,7 +30,7 @@ class SailorIntrospectCommand extends SailorEndpointCommand
     /**
      * @throws Exception
      */
-    protected function postExecute(InputInterface $input, OutputInterface $output): int
+    protected function postExecute(string $configPath, string $config, array $endpoints, InputInterface $input, OutputInterface $output): int
     {
         return (new IntrospectCommand())->run($input, $output);
     }

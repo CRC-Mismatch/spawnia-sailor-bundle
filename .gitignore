@@ -3,6 +3,7 @@
 /var/logs/*
 !var/cache/.gitkeep
 !var/logs/.gitkeep
+/var/test
 
 # Logs (Symfony4)
 /var/log/*
