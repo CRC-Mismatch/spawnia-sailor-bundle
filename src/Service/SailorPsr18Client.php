@@ -35,6 +35,8 @@ class SailorPsr18Client implements Client
     private ?UriFactoryInterface $uriFactory;
     private string $url = '';
     private bool $post = true;
+    /** @var array<string, string> */
+    private array $headers = [];
 
     public function __construct(?ClientInterface $client = null, ?RequestFactoryInterface $requestFactory = null, ?StreamFactoryInterface $streamFactory = null, ?UriFactoryInterface $uriFactory = null)
     {
@@ -64,6 +66,9 @@ class SailorPsr18Client implements Client
     protected function composeRequest(string $query, ?stdClass $variables = null): RequestInterface
     {
         $request = $this->requestFactory->createRequest($this->post ? 'POST' : 'GET', $this->url);
+        foreach ($this->headers as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
 
         if ($this->post) {
             $body = ['query' => $query];
@@ -108,6 +113,35 @@ class SailorPsr18Client implements Client
     {
         $new = clone $this;
         $new->post = $post;
+
+        return $new;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function setHeaders(array $headers): self
+    {
+        $new = clone $this;
+        $new->headers = $headers;
+
+        return $new;
+    }
+
+    public function addHeader(string $name, string $value): self
+    {
+        $new = clone $this;
+        $new->headers[$name] = $value;
+
+        return $new;
+    }
+
+    public function removeHeader(string $name): self
+    {
+        $new = clone $this;
+        unset($new->headers[$name]);
 
         return $new;
     }
