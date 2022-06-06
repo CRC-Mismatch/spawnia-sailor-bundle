@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Mismatch\SpawniaSailorBundle\Service;
 
 use JsonException;
+use Mismatch\SpawniaSailorBundle\OperationVisitor;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -18,12 +19,17 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
+use ReflectionException;
 use Spawnia\Sailor\Client;
 use Spawnia\Sailor\Error\InvalidDataException;
+use Spawnia\Sailor\ObjectLike;
+use Spawnia\Sailor\Operation;
 use Spawnia\Sailor\Response;
+use Spawnia\Sailor\Result;
 use stdClass;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
+use function get_class;
 use function urlencode;
 use const JSON_THROW_ON_ERROR;
 
@@ -44,6 +50,45 @@ class SailorPsr18Client implements Client
         $this->requestFactory = $requestFactory ?? new Psr17Factory();
         $this->streamFactory = $streamFactory ?? new Psr17Factory();
         $this->uriFactory = $uriFactory ?? new Psr17Factory();
+    }
+
+    /**
+     * @template TResult of \Spawnia\Sailor\Result
+     *
+     * @param Operation<TResult> $operation
+     * @param mixed[]            $args
+     *
+     * @throws ClientExceptionInterface
+     * @throws InvalidDataException
+     * @throws JsonException
+     * @throws ReflectionException
+     *
+     * @return TResult
+     */
+    public function execute(Operation $operation, ...$args): Result
+    {
+        $visitor = new OperationVisitor($operation);
+        $variables = new stdClass();
+        $arguments = $visitor->converters();
+        foreach ($args as $index => $arg) {
+            if (ObjectLike::UNDEFINED === $arg) {
+                continue;
+            }
+
+            [$name, $typeConverter] = $arguments[$index];
+            $variables->{$name} = $typeConverter->toGraphQL($arg);
+        }
+
+        $response = $this->request($operation::document(), $variables);
+
+        $child = get_class($operation);
+        $parts = explode('\\', $child);
+        $basename = end($parts);
+
+        /** @var class-string<TResult> $resultClass */
+        $resultClass = $child.'\\'.$basename.'Result';
+
+        return $resultClass::fromResponse($response);
     }
 
     /**
