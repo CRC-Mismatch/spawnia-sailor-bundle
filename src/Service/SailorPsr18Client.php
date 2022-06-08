@@ -10,16 +10,16 @@ declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\Service;
 
-use JsonException;
 use Mismatch\SpawniaSailorBundle\OperationVisitor;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Client\NetworkExceptionInterface;
+use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use ReflectionException;
 use Spawnia\Sailor\Client;
 use Spawnia\Sailor\Error\InvalidDataException;
 use Spawnia\Sailor\ObjectLike;
@@ -29,12 +29,15 @@ use Spawnia\Sailor\Result;
 use stdClass;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
+use Symfony\Component\Serializer\SerializerAwareInterface;
+use Symfony\Component\Serializer\SerializerAwareTrait;
 use function get_class;
 use function urlencode;
-use const JSON_THROW_ON_ERROR;
 
-class SailorPsr18Client implements Client
+class SailorPsr18Client implements Client, SerializerAwareInterface
 {
+    use SerializerAwareTrait;
+
     private ?ClientInterface $client;
     private ?RequestFactoryInterface $requestFactory;
     private ?StreamFactoryInterface $streamFactory;
@@ -44,8 +47,15 @@ class SailorPsr18Client implements Client
     /** @var array<string, string> */
     private array $headers = [];
 
-    public function __construct(?ClientInterface $client = null, ?RequestFactoryInterface $requestFactory = null, ?StreamFactoryInterface $streamFactory = null, ?UriFactoryInterface $uriFactory = null)
-    {
+    /** @var array<string, mixed> */
+    private array $serializationContext = [];
+
+    public function __construct(
+        ?ClientInterface $client = null,
+        ?RequestFactoryInterface $requestFactory = null,
+        ?StreamFactoryInterface $streamFactory = null,
+        ?UriFactoryInterface $uriFactory = null
+    ) {
         $this->client = $client ?? new Psr18Client(HttpClient::create(), new Psr17Factory(), $streamFactory);
         $this->requestFactory = $requestFactory ?? new Psr17Factory();
         $this->streamFactory = $streamFactory ?? new Psr17Factory();
@@ -53,15 +63,34 @@ class SailorPsr18Client implements Client
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function getSerializationContext(): array
+    {
+        return $this->serializationContext;
+    }
+
+    /**
+     * @param array<string, mixed> $serializationContext
+     */
+    public function setSerializationContext(array $serializationContext): self
+    {
+        $new = clone $this;
+        $new->serializationContext = $serializationContext;
+
+        return $new;
+    }
+
+    /**
      * @template TResult of \Spawnia\Sailor\Result
      *
      * @param Operation<TResult> $operation
-     * @param mixed[]            $args
+     * @param array              $args
      *
-     * @throws ClientExceptionInterface
-     * @throws InvalidDataException
-     * @throws JsonException
-     * @throws ReflectionException
+     * @throws InvalidDataException      whenever the client receives a status other than 200 OK and valid JSON/GraphQL results
+     * @throws RequestExceptionInterface Whenever a request fails for "user" reasons
+     * @throws NetworkExceptionInterface Whenever a request fails for external reasons
+     * @throws ClientExceptionInterface  Whenever the client fails for both previous (or other) reasons
      *
      * @return TResult
      */
@@ -94,7 +123,10 @@ class SailorPsr18Client implements Client
     /**
      * {@inheritDoc}
      *
-     * @throws ClientExceptionInterface|InvalidDataException|JsonException
+     * @throws InvalidDataException      whenever the client receives a status other than 200 OK with valid JSON/GraphQL results
+     * @throws RequestExceptionInterface Whenever a request fails for "user" reasons
+     * @throws NetworkExceptionInterface Whenever a request fails for external reasons
+     * @throws ClientExceptionInterface  Whenever the client fails for both previous (or other) reasons
      */
     public function request(string $query, stdClass $variables = null): Response
     {
@@ -105,9 +137,6 @@ class SailorPsr18Client implements Client
         return Response::fromResponseInterface($response);
     }
 
-    /**
-     * @throws JsonException
-     */
     protected function composeRequest(string $query, ?stdClass $variables = null): RequestInterface
     {
         $request = $this->requestFactory->createRequest($this->post ? 'POST' : 'GET', $this->url);
@@ -120,17 +149,21 @@ class SailorPsr18Client implements Client
             if (null !== $variables) {
                 $body['variables'] = $variables;
             }
-            $bodyStream = $this->streamFactory->createStream(json_encode($body, JSON_THROW_ON_ERROR));
+            $bodyStream = $this->streamFactory->createStream(
+                $this->serializer->serialize($body, 'json', $this->serializationContext)
+            );
 
             return $request
                 ->withHeader('Content-Type', 'application/json')
                 ->withBody($bodyStream);
         }
 
-        $getQuery = urlencode(json_encode($query, JSON_THROW_ON_ERROR));
+        $getQuery = urlencode($this->serializer->serialize($query, 'json', $this->serializationContext));
         $getVariables = '';
         if (null !== $variables) {
-            $getVariables = '&variables='.urlencode(json_encode($variables, JSON_THROW_ON_ERROR));
+            $getVariables = '&variables='.urlencode(
+                $this->serializer->serialize($variables, 'json', $this->serializationContext)
+            );
         }
 
         return $request->withUri($this->uriFactory->createUri("{$this->url}?query={$getQuery}$getVariables"));

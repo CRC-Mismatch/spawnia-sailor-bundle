@@ -13,6 +13,7 @@ namespace Mismatch\SpawniaSailorBundle;
 use ReflectionClass;
 use ReflectionException;
 use Spawnia\Sailor\Operation;
+use Symfony\Component\ErrorHandler\Error\UndefinedMethodError;
 
 class OperationVisitor
 {
@@ -40,13 +41,15 @@ class OperationVisitor
         return $this->visited::document();
     }
 
-    /**
-     * @throws ReflectionException
-     */
     public function converters(): array
     {
-        $converters = $this->classToVisit->getMethod('converters');
-        $converters->setAccessible(true);
-        return $converters->invoke(null);
+        try {
+            $converters = $this->classToVisit->getMethod('converters');
+            $converters->setAccessible(true);
+
+            return $converters->invoke(null);
+        } catch (ReflectionException $e) {
+            throw new UndefinedMethodError("Operation class {$this->classToVisit->getShortName()} has no 'converters' method.", $e);
+        }
     }
 }
