@@ -60,7 +60,7 @@ class MismatchSpawniaSailorExtension extends Extension
                 ->setMethodCalls([
                     ['setUrl', [$endpoint['url']], true],
                     ['setPost', [$endpoint['post']], true],
-                    ['setSerializer', new Reference('serializer')],
+                    ['setSerializer', [new Reference('serializer')]],
                 ])
                 ->setPublic(true);
             $container->setAlias("sailor.$snakeName.client", $id);
