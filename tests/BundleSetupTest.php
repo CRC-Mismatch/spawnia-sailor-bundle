@@ -10,10 +10,9 @@ declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\Tests;
 
-use Mismatch\SpawniaSailorBundle\Services\SailorPsr18Client;
+use Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client;
 use PHPUnit\Framework\TestCase;
 use Spawnia\Sailor\Client;
-
 use function is_int;
 
 class BundleSetupTest extends TestCase
@@ -21,16 +20,16 @@ class BundleSetupTest extends TestCase
     public function testSetupBundle(): void
     {
         $kernel = new Kernel('test', [
-            'suffix' => (string)time(),
+            'suffix' => (string) time(),
         ]);
         $kernel->boot();
-        
+
         $container = $kernel->getContainer();
 
         $services = [
             'sailor.client' => SailorPsr18Client::class,
             Client::class => SailorPsr18Client::class,
-            SailorPsr18Client::class
+            SailorPsr18Client::class,
         ];
 
         foreach ($services as $id => $class) {

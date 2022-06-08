@@ -12,27 +12,29 @@
         }
     ],
     "require": {
-        "php": "^7.4 | ^8.0",
+        "php": "^7.4||^8.0",
         "ext-json": "*",
-        "symfony/config": "^4.0|^5.0|^6.0",
-        "symfony/console": "^4.0|^5.0|^6.0",
-        "symfony/dependency-injection": "^4.0|^5.0|^6.0",
-        "symfony/event-dispatcher": "^4.0|^5.0|^6.0",
-        "symfony/http-kernel": "^4.0|^5.0|^6.0",
-        "spawnia/sailor": "^0.21",
+        "nette/php-generator": "^3.6||^4.0",
         "psr/http-client": "^1.0",
-        "symfony/cache-contracts": "^2.2|^3.0",
-        "symfony/filesystem": "^4.0|^5.0|^6.0",
-        "nette/php-generator": "^3.6|^4.0"
+        "spawnia/sailor": "^0.21",
+        "symfony/cache-contracts": "^2.2||^3.0",
+        "symfony/config": "^5.0||^6.0",
+        "symfony/console": "^5.0||^6.0",
+        "symfony/dependency-injection": "^5.0||^6.0",
+        "symfony/error-handler": "^5.0||^6.0",
+        "symfony/event-dispatcher": "^5.0||^6.0",
+        "symfony/filesystem": "^5.0||^6.0",
+        "symfony/http-kernel": "^5.0||^6.0",
+        "symfony/serializer": "^5.0||^6.0"
     },
     "require-dev": {
-        "matthiasnoback/symfony-dependency-injection-test": "^3.1|^4.0",
-        "symfony/framework-bundle": "^4.0|^5.0|^6.0",
+        "matthiasnoback/symfony-dependency-injection-test": "^4.3",
+        "symfony/framework-bundle": "^5.0||^6.0",
         "symfony/phpunit-bridge": "^5.3",
-        "symfony/debug": ">=4.4.41",
-        "phpunit/phpunit": "^8.5 | ^9.5",
+        "symfony/debug": "^4.4.41",
         "nyholm/psr7": "^1.5",
-        "symfony/http-client": "^4.0|^5.0|^6.0"
+        "symfony/http-client": "^5.0||^6.0",
+        "friendsofphp/php-cs-fixer": "^3.8"
     },
     "autoload": {
         "psr-4": {
@@ -48,7 +50,6 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "develop"
         }
     }
 }

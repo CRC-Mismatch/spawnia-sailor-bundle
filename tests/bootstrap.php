@@ -15,4 +15,4 @@ if (file_exists(dirname(__DIR__).'/config/bootstrap.php')) {
     require dirname(__DIR__).'/config/bootstrap.php';
 }
 
-define('RUN_SUFFIX', (string)time());
+define('RUN_SUFFIX', (string) time());

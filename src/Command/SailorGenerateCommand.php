@@ -17,16 +17,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SailorGenerateCommand extends SailorEndpointCommand
 {
-
     protected function getCommandName(): string
     {
         return 'sailor:codegen';
     }
 
+    protected function postConfigure(): void
+    {
+        $this->setDescription('Generate code from your GraphQL files.');
+    }
+
     /**
      * @throws Exception
      */
-    protected function postExecute(InputInterface $input, OutputInterface $output): int
+    protected function postExecute(string $configPath, string $config, array $endpoints, InputInterface $input, OutputInterface $output): int
     {
         return (new CodegenCommand())->run($input, $output);
     }

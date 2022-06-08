@@ -3,6 +3,7 @@
 /var/logs/*
 !var/cache/.gitkeep
 !var/logs/.gitkeep
+/var/test
 
 # Logs (Symfony4)
 /var/log/*
@@ -15,6 +16,7 @@
 !bin/console
 !bin/symfony_requirements
 /vendor/
+/composer.lock
 
 # PHPUnit
 /phpunit.xml
@@ -25,3 +27,5 @@
 
 # Composer PHAR
 /composer.phar
+
+/.php-cs-fixer.cache

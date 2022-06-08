@@ -16,25 +16,29 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('sailor');
+        $treeBuilder = new TreeBuilder('mismatch_spawnia_sailor');
         if (method_exists(TreeBuilder::class, 'getRootNode')) {
             $rootNode = $treeBuilder->getRootNode();
         } else {
-            $rootNode = $treeBuilder->root('sailor');
+            $rootNode = $treeBuilder->root('mismatch_spawnia_sailor');
         }
 
         $rootNode->children()
             ->booleanNode('default_post')
                 ->defaultTrue()
-                ->info("Should the default Sailor client use POST?")
+                ->info('Should the default Sailor client use POST?')
                 ->end()
             ->scalarNode('default_url')
                 ->defaultValue('')
-                ->info("Sets a URL for the default Sailor client")
+                ->info('Sets a URL for the default Sailor client')
+                ->end()
+            ->scalarNode('config_path')
+                ->defaultValue('config/graphql/sailor.php')
+                ->info('Set the sailor.php config file path (relative to Project Root)')
                 ->end()
             ->arrayNode('endpoints')
                 ->requiresAtLeastOneElement()
@@ -52,16 +56,16 @@ class Configuration implements ConfigurationInterface
                             ->info('Namespace for this endpoint\'s generated classes')
                             ->end()
                         ->scalarNode('generation_path')
-                            ->defaultValue('%kernel.project_dir%/generated')
-                            ->info('Target path for this endpoint\'s generated classes')
+                            ->defaultValue('generated')
+                            ->info('Target path for this endpoint\'s generated classes (relative to Project Root)')
                             ->end()
                         ->scalarNode('operations_path')
-                            ->defaultValue('%kernel.project_dir%/graphql/operations')
-                            ->info('Target path for this endpoint\'s operations (folder containing *.graphql files)')
+                            ->defaultValue('graphql/operations')
+                            ->info('Target path for this endpoint\'s operations (relative to Project Root, folder containing *.graphql files)')
                             ->end()
                         ->scalarNode('schema_path')
-                            ->defaultValue('%kernel.project_dir%/graphql/schemas/schema.graphql')
-                            ->info('Target path for this endpoint\'s schema files (one *.graphql file)')
+                            ->defaultValue('graphql/schemas/schema.graphql')
+                            ->info('Target path for this endpoint\'s schema files (relative to Project Root, one *.graphql file)')
                             ->end()
                         ->end()
                     ->end()
