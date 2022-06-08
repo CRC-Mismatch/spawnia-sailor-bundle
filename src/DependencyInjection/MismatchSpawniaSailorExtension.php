@@ -20,6 +20,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Filesystem\Path;
 use function str_replace;
 use function Symfony\Component\String\u;
@@ -59,6 +60,7 @@ class MismatchSpawniaSailorExtension extends Extension
                 ->setMethodCalls([
                     ['setUrl', [$endpoint['url']], true],
                     ['setPost', [$endpoint['post']], true],
+                    ['setSerializer', new Reference('serializer')],
                 ])
                 ->setPublic(true);
             $container->setAlias("sailor.$snakeName.client", $id);

@@ -14,6 +14,9 @@
             <call method="setPost" returns-clone="true">
                 <argument>%sailor.default_post%</argument>
             </call>
+            <call method="setSerializer">
+                <argument>@serializer</argument>
+            </call>
         </service>
         <prototype namespace="Mismatch\SpawniaSailorBundle\Command\" resource="../../Command/*" />
     </services>
