@@ -15,7 +15,7 @@
                 <argument>%sailor.default_post%</argument>
             </call>
             <call method="setSerializer">
-                <argument>@serializer</argument>
+                <argument type="service" id="serializer"/>
             </call>
         </service>
         <prototype namespace="Mismatch\SpawniaSailorBundle\Command\" resource="../../Command/*" />
