@@ -102,9 +102,9 @@ class MismatchSpawniaSailorExtension extends Extension
             $configClass->addMethod('makeClient')
                 ->setPublic()
                 ->setReturnType(Client::class)
-                ->addBody('return (new \\Mismatch\\SpawniaSailorBundle\\Service\\SailorPsr18Client())')
-                ->addBody('->setUrl(?)', [$options['url']])
-                ->addBody('->setPost(?);', [$options['post']]);
+                ->addBody("return (new $clientClass())")
+                ->addBody('    ->withUrl(?)', [$options['url']])
+                ->addBody('    ->withPost(?);', [$options['post']]);
             $configClass->addMethod('namespace')
                 ->setPublic()
                 ->setReturnType('string')
