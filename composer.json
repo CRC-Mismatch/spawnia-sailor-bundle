@@ -15,7 +15,6 @@
         "php": "^7.4||^8.0",
         "ext-json": "*",
         "nette/php-generator": "^3.6||^4.0",
-        "psr/http-client": "^1.0",
         "spawnia/sailor": "^0.21",
         "symfony/cache-contracts": "^2.2||^3.0",
         "symfony/config": "^5.0||^6.0",
@@ -30,11 +29,20 @@
     "require-dev": {
         "matthiasnoback/symfony-dependency-injection-test": "^4.3",
         "symfony/framework-bundle": "^5.0||^6.0",
-        "symfony/phpunit-bridge": "^5.3",
-        "symfony/debug": "^4.4.41",
-        "nyholm/psr7": "^1.5",
         "symfony/http-client": "^5.0||^6.0",
-        "friendsofphp/php-cs-fixer": "^3.8"
+        "symfony/phpunit-bridge": "^5.3",
+        "psr/http-client": "^1.0",
+        "nyholm/psr7": "^1.5",
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "guzzlehttp/guzzle": "^7.0",
+        "php-http/mock-client": "^1.5"
+    },
+    "suggest": {
+        "symfony/http-client": "^5.0 || ^6.0 for a complete Symfony Http Client Contracts (and PSR-18, but requires additional PSR-7) implementation",
+        "guzzlehttp/guzzle": "^7.0 for a complete PSR-18 (and PSR-7) implementation",
+        "php-http/socket-client": "^2.0.2 for a complete PSR-18 (and PSR-7) implementation",
+        "php-http/curl-client": "^2.1.0 for a PSR-18 implementation (requires additional PSR-7)",
+        "nyholm/psr7": "For a PSR-7 implementation"
     },
     "autoload": {
         "psr-4": {

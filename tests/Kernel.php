@@ -84,10 +84,10 @@ class Kernel extends BaseKernel
                 'http_method_override' => false,
             ]);
             $sailorBundleConfigs = [];
-            if ($this->configPath !== null) {
+            if (null !== $this->configPath) {
                 $sailorBundleConfigs['config_path'] = $this->configPath;
             }
-            if ($this->endpoints !== null) {
+            if (null !== $this->endpoints) {
                 $sailorBundleConfigs['endpoints'] = $this->endpoints;
             }
             $container->loadFromExtension('mismatch_spawnia_sailor', $sailorBundleConfigs);

@@ -27,7 +27,14 @@ class Configuration implements ConfigurationInterface
             $rootNode = $treeBuilder->root('mismatch_spawnia_sailor');
         }
 
-        $rootNode->children()
+        $rootNode
+            ->fixXmlConfig('endpoint')
+            ->children()
+            ->enumNode('default_client')
+                ->values(['auto', 'psr18', 'symfony'])
+                ->defaultValue('auto')
+                ->info('Preferred client implementation for auto-created services')
+                ->end()
             ->booleanNode('default_post')
                 ->defaultTrue()
                 ->info('Should the default Sailor client use POST?')
