@@ -16,11 +16,10 @@ use Spawnia\Sailor\ObjectLike;
 use Spawnia\Sailor\Operation;
 use Spawnia\Sailor\Result;
 use stdClass;
-use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerAwareTrait;
 use function get_class;
 
-abstract class AbstractSailorClient implements SailorClientInterface, SerializerAwareInterface
+abstract class AbstractSailorClient implements SailorClientInterface
 {
     use SerializerAwareTrait;
 
@@ -30,7 +29,7 @@ abstract class AbstractSailorClient implements SailorClientInterface, Serializer
     /** @var array<string, string> */
     protected array $headers = [];
 
-    /** @var array<string, mixed> */
+    /** @var array<string, array|string|object> */
     protected array $queryParams = [];
 
     /** @var array<string, mixed> */
@@ -142,6 +141,35 @@ abstract class AbstractSailorClient implements SailorClientInterface, Serializer
     {
         $new = clone $this;
         unset($new->headers[$name]);
+
+        return $new;
+    }
+
+    public function getQueryParams(): array
+    {
+        return $this->queryParams;
+    }
+
+    public function withQueryParams(array $queryParams): self
+    {
+        $new = clone $this;
+        $new->queryParams = $queryParams;
+
+        return $new;
+    }
+
+    public function withQueryParam(string $key, $value): self
+    {
+        $new = clone $this;
+        $new->queryParams[$key] = $value;
+
+        return $new;
+    }
+
+    public function withoutQueryParam(string $key): self
+    {
+        $new = clone $this;
+        unset($new->queryParams[$key]);
 
         return $new;
     }
