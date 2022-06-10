@@ -5,17 +5,17 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <defaults autoconfigure="true" autowire="true" public="false"/>
-        <service id="sailor.client" alias="Spawnia\Sailor\Client" public="true"/>
-        <service id="Spawnia\Sailor\Client" alias="Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client"/>
-        <service id="Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client">
-            <call method="setUrl" returns-clone="true">
-                <argument>%sailor.default_url%</argument>
-            </call>
-            <call method="setPost" returns-clone="true">
-                <argument>%sailor.default_post%</argument>
-            </call>
+        <service id="sailor.client" alias="Mismatch\SpawniaSailorBundle\Service\SailorClientInterface" public="true"/>
+        <service id="Spawnia\Sailor\Client" alias="Mismatch\SpawniaSailorBundle\Service\SailorClientInterface" public="true"/>
+        <service id="Mismatch\SpawniaSailorBundle\Service\AbstractSailorClient" abstract="true">
             <call method="setSerializer">
                 <argument type="service" id="serializer"/>
+            </call>
+            <call method="withUrl" returns-clone="true">
+                <argument>%sailor.default_url%</argument>
+            </call>
+            <call method="withPost" returns-clone="true">
+                <argument>%sailor.default_post%</argument>
             </call>
         </service>
         <prototype namespace="Mismatch\SpawniaSailorBundle\Command\" resource="../../Command/*" />

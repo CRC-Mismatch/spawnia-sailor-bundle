@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns="http://mismatch.org/schema/dic/spawnia_sailor_bundle"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://mismatch.org/schema/dic/spawnia_sailor_bundle"
+           elementFormDefault="qualified">
+
+    <xs:element name="mismatch_spawnia_sailor">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="endpoint" type="endpoint_type"/>
+            </xs:choice>
+            <xs:attribute name="default-client" type="default_client_type"/>
+            <xs:attribute name="default-url" type="xs:anyURI"/>
+            <xs:attribute name="default-post" type="xs:boolean"/>
+            <xs:attribute name="config-path" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="default_client_type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="auto"/>
+            <xs:enumeration value="psr18"/>
+            <xs:enumeration value="symfony"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="endpoint_type">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="post" type="xs:boolean"/>
+        <xs:attribute name="url" type="xs:anyURI"/>
+        <xs:attribute name="namespace" type="xs:string"/>
+        <xs:attribute name="generation-path" type="xs:string"/>
+        <xs:attribute name="operations-path" type="xs:string"/>
+        <xs:attribute name="schema-path" type="xs:string"/>
+    </xs:complexType>
+</xs:schema>

@@ -98,7 +98,19 @@ abstract class SailorEndpointCommand extends Command
                 Path::canonicalize("{$endpoint['schema_path']}/.."),
             ], 0775);
         }
-        $filesystem->dumpFile($configPath, $config);
+        $generateFile = true;
+        if ($filesystem->exists($configPath)) {
+            $currConfig = file_get_contents($configPath);
+            $currCode = preg_replace('/.+?return (\[.+])/s', '$1', $currConfig);
+            $currCksum = preg_replace('/.+?Original Hash: (.+?)$.+/sm', '$1', $currConfig);
+            $actualCksum = hash('fnv1a64', $currCode);
+            if (!empty($currCksum) && $actualCksum !== $currCksum) {
+                $generateFile = false;
+            }
+        }
+        if ($generateFile) {
+            $filesystem->dumpFile($configPath, $config);
+        }
     }
 
     abstract protected function getCommandName(): string;
