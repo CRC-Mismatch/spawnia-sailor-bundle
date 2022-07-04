@@ -26,8 +26,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use Symfony\Component\HttpKernel\KernelInterface;
-
 use function array_map;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
@@ -56,10 +54,10 @@ class SailorEndpointCommandTest extends KernelTestCase
             ],
         ]);
         $application = new Application($kernel);
-        $this->sailorEndpointCommand = new class(self::getContainer()->getParameterBag(), $kernel, $application) extends SailorEndpointCommand {
-            public function __construct(ParameterBag $parameters, KernelInterface $kernel, Application $application)
+        $this->sailorEndpointCommand = new class(self::getContainer()->getParameterBag(), self::getContainer(), $application) extends SailorEndpointCommand {
+            public function __construct(ParameterBag $parameters, ContainerInterface $container, Application $application)
             {
-                parent::__construct($parameters, $kernel);
+                parent::__construct($parameters, $container);
                 $this->setApplication($application);
             }
 
@@ -256,7 +254,7 @@ class SailorEndpointCommandTest extends KernelTestCase
         $tester->assertCommandIsSuccessful();
         $output = $tester->getDisplay();
         $this->assertJson($output);
-        $outputData = json_decode($output, true);/*
+        $outputData = json_decode($output, true); /*
         $this->assertArrayHasKey('config', $outputData);
         $this->assertIsString($outputData['config']);
         $config = $outputData['config'];

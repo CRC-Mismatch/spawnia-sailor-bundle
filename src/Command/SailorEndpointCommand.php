@@ -16,22 +16,20 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 use function array_key_exists;
 
 abstract class SailorEndpointCommand extends Command
 {
     protected ParameterBagInterface $parameters;
-    protected Container $container;
+    protected ContainerInterface $container;
     protected array $endpoints = [];
 
-    public function __construct(ParameterBagInterface $parameters, Container $container)
+    public function __construct(ParameterBagInterface $parameters, ContainerInterface $container)
     {
         parent::__construct();
         $this->parameters = $parameters;
@@ -78,7 +76,7 @@ abstract class SailorEndpointCommand extends Command
         $endpoints = !empty($endpoint) ? [$endpoint => $endpoints[$endpoint]] : $endpoints;
 
         foreach ($endpoints as $name => $value) {
-            $this->container->get("sailor.{$name}.endpoint_config");
+            $this->container->get("sailor.$name.endpoint_config");
         }
 
         $this->touchConfig($configPath);
