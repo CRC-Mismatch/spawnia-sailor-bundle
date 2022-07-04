@@ -18,6 +18,9 @@
                 <argument>%sailor.default_post%</argument>
             </call>
         </service>
-        <prototype namespace="Mismatch\SpawniaSailorBundle\Command\" resource="../../Command/*" />
+        <prototype namespace="Mismatch\SpawniaSailorBundle\Command\" resource="../../Command/*" >
+            <argument key="$parameters" type="service" id="parameter_bag"/>
+            <argument key="$container" type="service" id="service_container"/>
+        </prototype>
     </services>
 </container>
