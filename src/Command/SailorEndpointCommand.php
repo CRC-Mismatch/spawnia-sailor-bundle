@@ -16,20 +16,26 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use Symfony\Component\HttpKernel\KernelInterface;
+
 use function array_key_exists;
 
 abstract class SailorEndpointCommand extends Command
 {
     protected ParameterBagInterface $parameters;
+    protected Container $container;
     protected array $endpoints = [];
 
-    public function __construct(ParameterBagInterface $parameters)
+    public function __construct(ParameterBagInterface $parameters, Container $container)
     {
         parent::__construct();
         $this->parameters = $parameters;
+        $this->container = $container;
     }
 
     /**
@@ -53,12 +59,11 @@ abstract class SailorEndpointCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $endpoints = $this->parameters->get('sailor.endpoints');
-        $config = $this->parameters->get('sailor.config');
         $configPath = $this->parameters->get('sailor.config_path');
         if (empty($configPath)) {
             $io->error('The application requires a Sailor config_path to be set before using Sailor commands.');
         }
-        if (empty($config) || empty($endpoints)) {
+        if (empty($endpoints)) {
             $io->error('The application must have at least one endpoint configured in order to use Sailor.');
             $io->comment("It's possible that you just need to run cache:clear and try again");
 
@@ -72,11 +77,11 @@ abstract class SailorEndpointCommand extends Command
 
         $endpoints = !empty($endpoint) ? [$endpoint => $endpoints[$endpoint]] : $endpoints;
 
-        $this->generateConfigFile(
-            $configPath,
-            $config,
-            $endpoints,
-        );
+        foreach ($endpoints as $name => $value) {
+            $this->container->get("sailor.{$name}.endpoint_config");
+        }
+
+        $this->touchConfig($configPath);
 
         $argsOpts = [
             '--config' => $configPath,
@@ -84,32 +89,15 @@ abstract class SailorEndpointCommand extends Command
         !empty($endpoint) && $argsOpts['endpoint'] = $endpoint;
         $arrayInput = new ArrayInput($argsOpts);
 
-        return $this->postExecute($configPath, $config, $endpoints, $arrayInput, $output);
+        return $this->postExecute($configPath, $endpoints, $arrayInput, $output);
     }
 
-    protected function generateConfigFile(string $configPath, string $config, array $endpoints): void
+    protected function touchConfig(string $configPath): void
     {
         $filesystem = new Filesystem();
         $filesystem->mkdir(Path::canonicalize("$configPath/.."), 0775);
-        foreach ($endpoints as $endpoint) {
-            $filesystem->mkdir([
-                $endpoint['operations_path'],
-                $endpoint['generation_path'],
-                Path::canonicalize("{$endpoint['schema_path']}/.."),
-            ], 0775);
-        }
-        $generateFile = true;
-        if ($filesystem->exists($configPath)) {
-            $currConfig = file_get_contents($configPath);
-            $currCode = preg_replace('/.+?return (\[.+])/s', '$1', $currConfig);
-            $currCksum = preg_replace('/.+?Original Hash: (.+?)$.+/sm', '$1', $currConfig);
-            $actualCksum = hash('fnv1a64', $currCode);
-            if (!empty($currCksum) && $actualCksum !== $currCksum) {
-                $generateFile = false;
-            }
-        }
-        if ($generateFile) {
-            $filesystem->dumpFile($configPath, $config);
+        if (!$filesystem->exists($configPath)) {
+            $filesystem->touch($configPath);
         }
     }
 
@@ -119,5 +107,5 @@ abstract class SailorEndpointCommand extends Command
     {
     }
 
-    abstract protected function postExecute(string $configPath, string $config, array $endpoints, InputInterface $input, OutputInterface $output): int;
+    abstract protected function postExecute(string $configPath, array $endpoints, InputInterface $input, OutputInterface $output): int;
 }
