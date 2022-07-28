@@ -1,18 +1,10 @@
 <?php
 
-/**
- * @copyright  Copyright (c) 2022 E-vino Comércio de Vinhos S.A. (https://evino.com.br)
- * @author     Kevin Mian Kraiker <kevin.kraiker@evino.com.br>
- * @Link       https://evino.com.br
- */
-
 declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\Tests\Functional\Command;
 
 use Mismatch\SpawniaSailorBundle\Command\SailorEndpointCommand;
-use Mismatch\SpawniaSailorBundle\Service\SailorClientInterface;
-use Spawnia\Sailor\EndpointConfig;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -26,8 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use function array_map;
-use function is_string;
 use const JSON_THROW_ON_ERROR;
 
 class SailorEndpointCommandTest extends KernelTestCase
