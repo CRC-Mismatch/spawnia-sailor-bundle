@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @copyright  Copyright (c) 2022 E-vino Comércio de Vinhos S.A. (https://evino.com.br)
- * @author     Kevin Mian Kraiker <kevin.kraiker@evino.com.br>
- * @Link       https://evino.com.br
- */
-
 declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\DependencyInjection;
@@ -18,15 +12,7 @@ use Mismatch\SpawniaSailorBundle\Service\GenericSailorEndpointConfig;
 use Mismatch\SpawniaSailorBundle\Service\SailorClientInterface;
 use Mismatch\SpawniaSailorBundle\Service\SailorPsr18Client;
 use Mismatch\SpawniaSailorBundle\Service\SailorSymfonyHttpClient;
-use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\Property;
-use Nette\PhpGenerator\PsrPrinter;
-use Spawnia\Sailor\Client;
-use Spawnia\Sailor\EndpointConfig;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
-use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -35,7 +21,6 @@ use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpClient\Psr18Client;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 use function Symfony\Component\String\u;
 

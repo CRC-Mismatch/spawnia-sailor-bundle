@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @copyright  Copyright (c) 2022 E-vino Comércio de Vinhos S.A. (https://evino.com.br)
- * @author     Kevin Mian Kraiker <kevin.kraiker@evino.com.br>
- * @Link       https://evino.com.br
- */
-
 declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\Tests;

@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @copyright  Copyright (c) 2022 E-vino Comércio de Vinhos S.A. (https://evino.com.br)
- * @author     Kevin Mian Kraiker <kevin.kraiker@evino.com.br>
- * @Link       https://evino.com.br
- */
-
 declare(strict_types=1);
 
 namespace Mismatch\SpawniaSailorBundle\Service;
@@ -24,7 +18,6 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\UriFactoryInterface;
 use Spawnia\Sailor\Error\InvalidDataException;
 use Spawnia\Sailor\Response;
 use stdClass;
