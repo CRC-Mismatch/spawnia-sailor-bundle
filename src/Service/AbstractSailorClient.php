@@ -44,7 +44,7 @@ abstract class AbstractSailorClient implements SailorClientInterface
         $visitor = new OperationVisitor($operation);
         $variables = new stdClass();
         $arguments = $visitor->converters();
-        $arguments += array_column($arguments, 1, 0);
+        $arguments += array_column($arguments, null, 0);
         foreach ($args as $index => $arg) {
             if (ObjectLike::UNDEFINED === $arg) {
                 continue;
