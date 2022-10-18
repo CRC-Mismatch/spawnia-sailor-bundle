@@ -118,7 +118,7 @@ abstract class AbstractSailorClient implements SailorClientInterface
     public function withHeaders(array $headers): self
     {
         $new = clone $this;
-        $new->headers = $headers;
+        $new->headers += $headers;
 
         return $new;
     }
