@@ -77,12 +77,14 @@ interface SailorClientInterface extends Client, SerializerAwareInterface
     public function getHeaders(): array;
 
     /**
+     * @param string|string[] $value
+     *
      * @return static
      */
-    public function withHeader(string $name, string $value): self;
+    public function withHeader(string $name, $value): self;
 
     /**
-     * @param array<string, string> $headers
+     * @param array<string, string|string[]> $headers
      *
      * @return static
      */
