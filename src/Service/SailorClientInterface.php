@@ -39,14 +39,14 @@ interface SailorClientInterface extends Client, SerializerAwareInterface
     public function getQueryParams(): array;
 
     /**
-     * @param array<string, array|string|object> $queryParams
+     * @param array<string, array|bool|float|int|string|object> $queryParams
      *
      * @return static
      */
     public function withQueryParams(array $queryParams): self;
 
     /**
-     * @param array|string|object $value
+     * @param array|bool|float|int|string|object $value
      *
      * @return static
      */
