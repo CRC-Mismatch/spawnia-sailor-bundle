@@ -2,7 +2,7 @@
     "name": "mismatch/sailor-bundle",
     "type": "symfony-bundle",
     "description": "Integrate Sailor into Symfony",
-    "keywords": ["graphql", "sailor", "client"],
+    "keywords": ["graphql", "sailor", "client", "symfony-bundle"],
     "license": "MIT",
     "authors": [
         {

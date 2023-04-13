@@ -20,7 +20,7 @@ abstract class AbstractSailorClient implements SailorClientInterface
     protected string $url = '';
     protected bool $post = true;
 
-    /** @var array<string, string> */
+    /** @var array<string, string|string[]> */
     protected array $headers = [];
 
     /** @var array<string, array|string|object> */
@@ -30,7 +30,7 @@ abstract class AbstractSailorClient implements SailorClientInterface
     protected array $serializationContext = [];
 
     /**
-     * @template TResult of \Spawnia\Sailor\Result
+     * @template TResult of Result
      *
      * @param Operation<TResult> $operation
      * @param array              $args
@@ -123,7 +123,7 @@ abstract class AbstractSailorClient implements SailorClientInterface
         return $new;
     }
 
-    public function withHeader(string $name, string $value): self
+    public function withHeader(string $name, $value): self
     {
         $new = clone $this;
         $new->headers[$name] = $value;
