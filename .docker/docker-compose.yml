@@ -1,4 +1,10 @@
 version: '3.5'
+
+networks:
+  project_network:
+    driver: bridge
+    name: ${COMPOSE_PROJECT_NAME}_network
+
 services:
   php-cli-8.1:
     build:
@@ -19,6 +25,8 @@ services:
       - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - project_network
   php-cli-8.0:
     build:
       context: .
@@ -38,6 +46,8 @@ services:
       - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - project_network
   php-cli-7.4:
     build:
       context: .
@@ -57,6 +67,8 @@ services:
       - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - project_network
   php-cli-7.3:
     build:
       context: .
@@ -76,6 +88,8 @@ services:
       - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - project_network
   php-cli-7.2:
     build:
       context: .
@@ -95,6 +109,8 @@ services:
       - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - project_network
   php-cli-7.1:
     build:
       context: .
@@ -114,3 +130,5 @@ services:
       - PHP_UPLOAD_MAX_FILESIZE=$PHP_CLI_UPLOAD_MAX_FILESIZE
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - project_network
