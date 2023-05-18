@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\SerializerAwareInterface;
 interface SailorClientInterface extends Client, SerializerAwareInterface
 {
     /**
-     * @template TResult of \Spawnia\Sailor\Result
+     * @template TResult of Result
      *
      * @param Operation<TResult> $operation
      * @param array              $args
@@ -72,19 +72,19 @@ interface SailorClientInterface extends Client, SerializerAwareInterface
     public function withPost(bool $post): self;
 
     /**
-     * @return array<string, string>
+     * @return array<string, array<int, string|null>|string|null>
      */
     public function getHeaders(): array;
 
     /**
-     * @param string|string[] $value
+     * @param array<int, string|null>|string|null $value
      *
      * @return static
      */
     public function withHeader(string $name, $value): self;
 
     /**
-     * @param array<string, string|string[]> $headers
+     * @param array<string, array<int, string|null>|string|null> $headers
      *
      * @return static
      */
