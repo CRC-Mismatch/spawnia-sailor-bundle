@@ -121,10 +121,10 @@ class SailorPsr18Client extends AbstractSailorClient
                 ->withUri($request->getUri()->withQuery($queryParams));
         }
 
-        $getQuery = urlencode($this->serializer->serialize($query, 'json', $this->serializationContext));
+        $getQuery = urlencode($query);
         $getVariables = '';
         $queryParams = "&$queryParams";
-        if (null !== $variables) {
+        if (!empty($variables)) {
             $getVariables = '&variables='.urlencode(
                 $this->serializer->serialize($variables, 'json', $this->serializationContext)
             );
