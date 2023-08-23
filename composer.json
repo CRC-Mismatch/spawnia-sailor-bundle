@@ -59,5 +59,10 @@
     "extra": {
         "branch-alias": {
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     }
 }
