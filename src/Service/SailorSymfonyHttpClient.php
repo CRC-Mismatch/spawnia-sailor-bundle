@@ -5,19 +5,26 @@ declare(strict_types=1);
 namespace Mismatch\SpawniaSailorBundle\Service;
 
 use Closure;
+use JsonException;
 use Spawnia\Sailor\Error\InvalidDataException;
 use Spawnia\Sailor\Response;
 use stdClass;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 use function is_array;
 use function is_object;
+use function json_decode;
 
+use const JSON_THROW_ON_ERROR;
+
+/**
+ * This class exists so one can leverage Symfony's MockHttpClient for tests - production stability IS NOT guaranteed!
+ */
 class SailorSymfonyHttpClient extends AbstractSailorClient
 {
     private ?HttpClientInterface $client;
@@ -50,12 +57,8 @@ class SailorSymfonyHttpClient extends AbstractSailorClient
             throw new InvalidDataException("Response must have status code 200, got: {$response->getStatusCode()}");
         }
         try {
-            $responseObject = $this->serializer->deserialize(
-                $json,
-                stdClass::class,
-                'json'
-            );
-        } catch (NotEncodableValueException $jsonException) {
+            $responseObject = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $jsonException) {
             throw new InvalidDataException("Received a response that is invalid JSON: {$json}", 0, $jsonException);
         }
 
