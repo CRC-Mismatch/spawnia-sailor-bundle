@@ -45,7 +45,7 @@ class Kernel extends BaseKernel
     {
         $container = parent::buildContainer();
         $container->addCompilerPass(new class() implements CompilerPassInterface {
-            public function process(ContainerBuilder $container)
+            public function process(ContainerBuilder $container): void
             {
                 foreach ($container->getDefinitions() as $id => $definition) {
                     if ('parameter_bag' === $id) {
@@ -69,7 +69,7 @@ class Kernel extends BaseKernel
     /**
      * {@inheritDoc}
      */
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(function (ContainerBuilder $container) {
             $container->setParameter('kernel.project_dir', Path::canonicalize(__DIR__.'/..'));
