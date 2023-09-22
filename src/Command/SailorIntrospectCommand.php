@@ -6,6 +6,7 @@ namespace Mismatch\SpawniaSailorBundle\Command;
 
 use Exception;
 use Spawnia\Sailor\Console\IntrospectCommand;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -22,7 +23,7 @@ class SailorIntrospectCommand extends SailorEndpointCommand
     }
 
     /**
-     * @throws Exception
+     * @throws ExceptionInterface
      */
     protected function postExecute(string $configPath, array $endpoints, InputInterface $input, OutputInterface $output): int
     {
