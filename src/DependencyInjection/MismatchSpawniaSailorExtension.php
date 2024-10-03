@@ -82,6 +82,7 @@ class MismatchSpawniaSailorExtension extends Extension
                     ['setSerializer', [new Reference('serializer')]],
                     ['withUrl', [$endpoint['url']], true],
                     ['withPost', [$endpoint['post']], true],
+                    ['forceEndpointConfigInit', [new Reference("sailor.$snakeName.endpoint_config")]]
                 ])
                 ->setPublic(true));
             $container->registerAliasForArgument($id, SailorClientInterface::class, "{$camelName}Client");

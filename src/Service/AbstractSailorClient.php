@@ -11,6 +11,10 @@ use Spawnia\Sailor\Operation;
 use Spawnia\Sailor\Result;
 use stdClass;
 use Symfony\Component\Serializer\SerializerAwareTrait;
+
+use function array_column;
+use function end;
+use function explode;
 use function get_class;
 
 abstract class AbstractSailorClient implements SailorClientInterface
@@ -166,5 +170,10 @@ abstract class AbstractSailorClient implements SailorClientInterface
         unset($new->queryParams[$key]);
 
         return $new;
+    }
+
+    public function forceEndpointConfigInit(GenericSailorEndpointConfig $config): void
+    {
+        // Do nothing, we just need to call this method to force the initialization of the endpoint config
     }
 }
