@@ -73,7 +73,7 @@ class Kernel extends BaseKernel
     {
         $loader->load(function (ContainerBuilder $container) {
             $container->setParameter('kernel.project_dir', Path::canonicalize(__DIR__.'/..'));
-            $container->loadFromExtension('framework', [
+            $frameworkConfig = [
                 'test' => true,
                 'secret' => 'test',
                 'router' => [
@@ -82,7 +82,12 @@ class Kernel extends BaseKernel
                     'utf8' => true,
                 ],
                 'http_method_override' => false,
-            ]);
+            ];
+            if (self::VERSION_ID >= 60200) {
+                $frameworkConfig['handle_all_throwables'] = false;
+                $frameworkConfig['php_errors']['log'] = false;
+            }
+            $container->loadFromExtension('framework', $frameworkConfig);
             $sailorBundleConfigs = [];
             if (null !== $this->configPath) {
                 $sailorBundleConfigs['config_path'] = $this->configPath;
