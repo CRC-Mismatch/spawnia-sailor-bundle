@@ -6,6 +6,7 @@ namespace Mismatch\SpawniaSailorBundle\Service;
 
 use Closure;
 use JsonException;
+use Mismatch\SpawniaSailorBundle\Util\GraphQlUtils;
 use Spawnia\Sailor\Error\InvalidDataException;
 use Spawnia\Sailor\Response;
 use stdClass;
@@ -84,7 +85,7 @@ class SailorSymfonyHttpClient extends AbstractSailorClient
             $requestOptions['body'] = $this->serializer->serialize($body, 'json', $this->serializationContext);
             $requestOptions['headers']['Content-Type'] = 'application/json';
         } else {
-            $requestOptions['query']['query'] = $query;
+            $requestOptions['query']['query'] = GraphQlUtils::minify($query);
             if (null !== $variables) {
                 $requestOptions['query']['variables'] = $variables;
             }

@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
 use LogicException;
+use Mismatch\SpawniaSailorBundle\Util\GraphQlUtils;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -121,7 +122,7 @@ class SailorPsr18Client extends AbstractSailorClient
                 ->withUri($request->getUri()->withQuery($queryParams));
         }
 
-        $getQuery = urlencode($query);
+        $getQuery = urlencode(GraphQlUtils::minify($query));
         $getVariables = '';
         $queryParams = "&$queryParams";
         if (!empty($variables)) {
