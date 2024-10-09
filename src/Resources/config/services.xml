@@ -7,6 +7,7 @@
         <defaults autoconfigure="true" autowire="true" public="false"/>
         <service id="sailor.client" alias="Mismatch\SpawniaSailorBundle\Service\SailorClientInterface" public="true"/>
         <service id="Spawnia\Sailor\Client" alias="Mismatch\SpawniaSailorBundle\Service\SailorClientInterface" public="true"/>
+        <service id="Mismatch\SpawniaSailorBundle\Util\GraphQlUtils" public="true"/>
         <service id="Mismatch\SpawniaSailorBundle\Service\AbstractSailorClient" abstract="true">
             <call method="setSerializer">
                 <argument type="service" id="serializer"/>
